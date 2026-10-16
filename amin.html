@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎭 بازی پانتومیم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #09090b; --surface: rgba(255,255,255,0.03); --surface-2: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.09); --border-strong: rgba(255,255,255,0.18);
+    --text: #fafafa; --text-2: #a1a1aa; --text-3: #71717a;
+    --accent: #8b5cf6; --accent-text: #a78bfa; --accent-soft: rgba(139,92,246,0.14);
+    --green: #10b981; --green-text: #34d399; --green-soft: rgba(16,185,129,0.13);
+    --red: #f43f5e; --red-text: #fb7185; --red-soft: rgba(244,63,94,0.13);
+    --amber: #f59e0b; --amber-text: #fcd34d; --amber-soft: rgba(245,158,11,0.13);
+    --thead: rgba(255,255,255,0.045); --shadow: 0 24px 70px rgba(0,0,0,0.55);
+  }
+  body.light {
+    --bg: #f4f4f5; /* ✅ اصلاح: پس‌زمینه‌ی صفحه در حالت روشن هم روشن می‌شود */
+    --surface: #ffffff; --surface-2: #f7f7f8; --border: #e6e6ea; --border-strong: #d4d4d9;
+    --text: #18181b; --text-2: #52525b; --text-3: #a1a1aa;
+    --accent-text: #7c3aed; --accent-soft: rgba(139,92,246,0.09);
+    --green-text: #059669; --green-soft: rgba(16,185,129,0.09);
+    --red-text: #e11d48; --red-soft: rgba(244,63,94,0.07);
+    --amber-text: #92400e; --amber-soft: rgba(245,158,11,0.1);
+    --thead: rgba(0,0,0,0.035); --shadow: 0 20px 50px rgba(0,0,0,0.08);
+  }
+  html, body { font-family: 'Vazirmatn','Segoe UI',Tahoma,sans-serif; -webkit-font-smoothing: antialiased; }
+  body { background: var(--bg); min-height: 100vh; padding: 24px 16px; color: var(--text); line-height: 1.7; overflow-x: hidden; transition: background .4s, color .4s; }
+  .err-banner { position: fixed; top:0; left:0; right:0; z-index:99999; background:#dc2626; color:#fff; padding:10px 14px; font-size:13px; direction:ltr; text-align:left; font-family:monospace; display:none; }
+  .glow { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -2; pointer-events: none; animation: glowDrift 20s ease-in-out infinite; }
+  .glow1 { width:460px; height:460px; background:rgba(124,58,237,.28); top:-140px; right:-120px; }
+  .glow2 { width:380px; height:380px; background:rgba(34,211,238,.16); bottom:-120px; left:-100px; animation-delay:-7s; }
+  .glow3 { width:300px; height:300px; background:rgba(217,70,239,.14); top:42%; left:6%; animation-delay:-13s; }
+  @keyframes glowDrift { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-40px,30px) scale(1.12);} }
+  body.light .glow { opacity: .3; }
+  .float-emoji { position: fixed; font-size:34px; opacity:.35; z-index:-1; pointer-events:none; animation: floatEmoji 7s ease-in-out infinite; }
+  @keyframes floatEmoji { 0%,100%{transform:translateY(0) rotate(-6deg);} 50%{transform:translateY(-26px) rotate(6deg);} }
+  body.light .float-emoji { opacity:.18; }
+  .container { max-width:780px; margin:0 auto; background:rgba(18,18,22,.72); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid var(--border); border-radius:28px; padding:28px; box-shadow:var(--shadow); transition:background .4s,border-color .4s; }
+  body.light .container { background:rgba(255,255,255,.86); }
+  .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:8px; }
+  .top-bar button { width:auto; margin:0; padding:8px 15px; font-size:13px; background:var(--surface-2); color:var(--text-2); border:1px solid var(--border); border-radius:999px; box-shadow:none; }
+  .top-bar button:hover { color:var(--text); border-color:var(--border-strong); transform:translateY(-1px); box-shadow:none; }
+  .back-btn {
+    width:auto;
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--surface-2); color:var(--text-2);
+    border:1px solid var(--border);
+    box-shadow:none;
+    padding:8px 18px; font-size:13.5px; margin-bottom:14px;
+  }
+  .back-btn:hover:not(:disabled) { color:var(--text); border-color:var(--border-strong); transform:translateY(-1px); box-shadow:none; }
+  .brand { text-align:center; margin-bottom:28px; }
+  .brand-icon { width:64px; height:64px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:30px; background:var(--accent-soft); border:1px solid var(--border); border-radius:20px; animation:bob 4s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+  h1 { font-size:30px; font-weight:900; letter-spacing:-.5px; }
+  .brand-sub { color:var(--text-2); font-size:14px; margin-top:4px; font-weight:500; }
+  h2 { font-size:20px; font-weight:800; text-align:center; margin:18px 0 14px; }
+  h3 { font-size:16px; font-weight:800; margin-bottom:12px; }
+  .screen { display:none; }
+  .screen.active { display:block; animation:screenIn .4s cubic-bezier(.22,1,.36,1); }
+  @keyframes screenIn { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  input, select, button { font-family:'Vazirmatn','Segoe UI',Tahoma,sans-serif; font-size:15.5px; font-weight:500; width:100%; border-radius:14px; transition:all .2s; }
+  input { padding:13px 16px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); margin-bottom:12px; }
+  input::placeholder { color:var(--text-3); }
+  input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); background:var(--surface); }
+  button { padding:13px 16px; border:1px solid rgba(255,255,255,.14); background:linear-gradient(180deg,#8b5cf6,#7c3aed); color:#fff; cursor:pointer; font-weight:700; margin-bottom:12px; user-select:none; -webkit-user-select:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 22px rgba(124,58,237,.28); }
+  button:hover:not(:disabled) { transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 28px rgba(124,58,237,.4); }
+  button:active:not(:disabled) { transform:translateY(0) scale(.985); }
+  button:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn-success { background:linear-gradient(180deg,#10b981,#059669); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 22px rgba(5,150,105,.28); }
+  .btn-danger { background:linear-gradient(180deg,#f43f5e,#e11d48); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 22px rgba(225,29,72,.28); }
+  .btn-warning { background:linear-gradient(180deg,#f59e0b,#d97706); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 22px rgba(217,119,6,.28); }
+  .btn-secondary { background:var(--surface-2); color:var(--text); border:1px solid var(--border); box-shadow:none; }
+  .btn-secondary:hover:not(:disabled) { border-color:var(--border-strong); box-shadow:none; }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .card { background:var(--surface-2); border:1px solid var(--border); border-radius:18px; padding:20px; margin:14px 0; text-align:center; transition:background .4s,border-color .4s; }
+  .card.hero { background:linear-gradient(180deg,var(--accent-soft),transparent 130%); }
+  .hero .wave { display:inline-block; animation:emojiWiggle 2.5s ease-in-out infinite; }
+  @keyframes emojiWiggle { 0%,100%{transform:rotate(-7deg);} 50%{transform:rotate(7deg);} }
+  .choice-label { display:block; text-align:right; color:var(--text-2); font-size:13px; font-weight:700; margin:16px 2px 8px; letter-spacing:.3px; }
+  .choice-label:first-child { margin-top:0; }
+  .choice-label .step-num {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:11px; font-weight:800;
+    margin-left:6px; vertical-align:middle;
+  }
+  .choice-btn { position:relative; background:var(--surface-2); border:1.5px solid var(--border); color:var(--text); padding:16px 14px; font-size:16px; font-weight:700; margin-bottom:0; box-shadow:none; }
+  .choice-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--surface); transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.3); }
+  .choice-btn.selected { border-color:var(--accent); background:var(--accent-soft); box-shadow:0 0 0 3px var(--accent-soft); }
+  .cb-check { position:absolute; top:9px; left:9px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.4); transition:all .25s cubic-bezier(.22,1,.36,1); }
+  .choice-btn.selected .cb-check { opacity:1; transform:scale(1); }
+  .score-pill { display:inline-block; margin-top:6px; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; background:var(--accent-soft); color:var(--accent-text); border:1px solid var(--border); }
+  .choice-btn.selected .score-pill { background:rgba(255,255,255,.2); color:#fff; border-color:transparent; }
+  .cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .cat-btn { padding:15px 8px; font-size:14px; }
+  .cat-btn .cat-emoji { display:block; font-size:26px; margin-bottom:6px; }
+  .level-wrap { display:none; }
+  .level-wrap.open { display:block; animation:levelIn .35s cubic-bezier(.22,1,.36,1); }
+  @keyframes levelIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+  .mode-btn { display:flex; align-items:center; gap:16px; text-align:right; padding:18px; background:var(--surface-2); border:1.5px solid var(--border); color:var(--text); margin-bottom:12px; box-shadow:none; }
+  .mode-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--surface); transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.3); }
+  .mode-icon { width:56px; height:56px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:28px; background:var(--accent-soft); border-radius:16px; }
+  .mode-body { flex:1; }
+  .mode-title { display:block; font-size:17px; font-weight:800; }
+  .mode-desc { display:block; font-size:13px; color:var(--text-2); font-weight:500; margin-top:3px; line-height:1.6; }
+  .mode-arrow { color:var(--text-3); font-size:20px; transition:all .2s; }
+  .mode-btn:hover .mode-arrow { transform:translateX(-4px); color:var(--accent-text); }
+  .progress { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px; }
+  .team-label { display:inline-flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--border); padding:7px 15px; border-radius:999px; font-size:13px; font-weight:600; color:var(--text-2); }
+  .team-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .team-dot.t1 { background:var(--accent); }
+  .team-dot.t2 { background:var(--red); }
+  .round-dots { display:flex; justify-content:center; gap:5px; margin:8px 0 14px; flex-wrap:wrap; }
+  .round-dot { width:10px; height:10px; border-radius:50%; background:var(--border-strong); transition:all .3s; }
+  .round-dot.t1 { background:var(--accent); }
+  .round-dot.t2 { background:var(--red); }
+  .round-dot.current { animation:dotPulse 1.4s ease-in-out infinite; }
+  @keyframes dotPulse { 0%,100%{box-shadow:0 0 0 3px var(--accent-soft); transform:scale(1.15);} 50%{box-shadow:0 0 0 6px transparent; transform:scale(1.3);} }
+  .warning { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--amber-soft); border:1px solid rgba(245,158,11,.3); color:var(--amber-text); padding:12px 16px; border-radius:14px; margin-bottom:16px; font-size:13.5px; font-weight:600; text-align:center; }
+  .speed-banner { text-align:center; padding:9px; background:var(--amber-soft); border:1px solid rgba(245,158,11,.3); color:var(--amber-text); border-radius:12px; margin-bottom:14px; font-weight:700; font-size:14px; }
+  .speed-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+  .speed-stats > div { background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; font-size:11.5px; font-weight:600; color:var(--text-2); }
+  .speed-stats .stat-val { display:block; font-size:22px; font-weight:900; color:var(--text); margin-top:2px; }
+  .topic-info { text-align:center; color:var(--text-2); font-size:13px; margin-bottom:6px; }
+  .topic-info b { color:var(--text); }
+  .topic { background:var(--surface-2); border:1.5px dashed var(--border-strong); border-radius:18px; padding:28px 20px; min-height:110px; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:900; line-height:1.5; text-align:center; transition:all .3s; }
+  @keyframes topicReveal { 0%{opacity:0; transform:scale(.88);} 60%{transform:scale(1.04);} 100%{opacity:1; transform:scale(1);} }
+  .topic.shuffling { animation:shuffle .15s infinite !important; color:var(--text-3); }
+  @keyframes shuffle { 0%{transform:translateX(-3px);} 50%{transform:translateX(3px);} 100%{transform:translateX(-3px);} }
+  .timer-wrap { position:relative; width:190px; height:190px; margin:14px auto 20px; }
+  .timer-ring { width:100%; height:100%; transform:rotate(-90deg); }
+  .ring-bg { fill:none; stroke:var(--border); stroke-width:11; }
+  .ring-fill { fill:none; stroke:var(--green); stroke-width:11; stroke-linecap:round; stroke-dasharray:540.35; stroke-dashoffset:0; transition:stroke-dashoffset 1s linear, stroke .4s; filter:drop-shadow(0 0 8px rgba(16,185,129,.45)); }
+  .timer-wrap.warning .ring-fill { stroke:var(--amber); filter:drop-shadow(0 0 8px rgba(245,158,11,.45)); }
+  .timer-wrap.danger .ring-fill { stroke:var(--red); filter:drop-shadow(0 0 10px rgba(244,63,94,.55)); }
+  .timer-num { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:900; font-variant-numeric:tabular-nums; direction:ltr; }
+  .timer-wrap.warning .timer-num { color:var(--amber-text); }
+  .timer-wrap.danger .timer-num { color:var(--red-text); animation:pulse .8s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.07);} }
+  table { width:100%; border-collapse:separate; border-spacing:0; margin:14px 0; font-size:14.5px; background:var(--surface-2); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  th { background:var(--thead); color:var(--text-2); font-size:12.5px; font-weight:700; padding:12px; text-align:center; letter-spacing:.3px; }
+  td { padding:13px; text-align:center; border-top:1px solid var(--border); }
+  .score-big { font-size:20px; font-weight:900; color:var(--accent-text); animation:scorePop .6s cubic-bezier(.22,1,.36,1); }
+  @keyframes scorePop { 0%{transform:scale(.6); opacity:0;} 70%{transform:scale(1.12);} 100%{transform:scale(1); opacity:1;} }
+  .report-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 2px; border-bottom:1px dashed var(--border); font-size:14.5px; }
+  .report-row:last-of-type { border-bottom:none; }
+  .r-label { color:var(--text-2); font-weight:500; }
+  .r-val { font-weight:800; text-align:left; }
+  .report-row.total { border-bottom:none; border-top:1.5px solid var(--border-strong); margin-top:4px; font-size:15.5px; }
+  .report-row.total .r-val { color:var(--green-text); font-size:20px; }
+  .next-turn-box { background:var(--surface-2); border:1px solid var(--border); border-radius:18px; padding:20px; text-align:center; margin-top:14px; }
+  .next-turn-box p { color:var(--text-2); font-size:14px; font-weight:600; margin-bottom:12px; }
+  .winner { text-align:center; padding:28px 24px; background:linear-gradient(135deg,#fbbf24,#f97316); border-radius:20px; margin:15px 0; font-size:18px; font-weight:800; line-height:1.9; color:#431407; box-shadow:0 16px 44px rgba(249,115,22,.35); animation:winnerPop .6s cubic-bezier(.22,1,.36,1); }
+  .winner .trophy { display:inline-block; font-size:38px; animation:trophyBounce 1.4s ease-in-out infinite; }
+  @keyframes trophyBounce { 0%,100%{transform:translateY(0) rotate(-5deg);} 50%{transform:translateY(-10px) rotate(5deg);} }
+  @keyframes winnerPop { 0%{transform:scale(.85); opacity:0;} 60%{transform:scale(1.03);} 100%{transform:scale(1); opacity:1;} }
+  .history-item { display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; font-size:13.5px; animation:slideInItem .4s ease backwards; }
+  .history-item:hover { border-color:var(--border-strong); }
+  .history-item.correct { border-inline-start:3px solid var(--green); }
+  .history-item.wrong { border-inline-start:3px solid var(--red); }
+  @keyframes slideInItem { from{opacity:0; transform:translateX(18px);} to{opacity:1; transform:translateX(0);} }
+  .history-topic { font-weight:800; }
+  .history-info { color:var(--text-3); font-size:11.5px; margin-top:2px; }
+  .history-score { background:var(--green-soft); color:var(--green-text); padding:5px 13px; border-radius:999px; font-weight:800; font-size:12.5px; white-space:nowrap; }
+  .coin-scene { display:flex; flex-direction:column; align-items:center; margin:24px 0; }
+  .coin-wrap { width:180px; height:180px; perspective:1100px; animation:bob 3.5s ease-in-out infinite; }
+  .coin { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 2.6s cubic-bezier(.15,.85,.25,1); }
+  .coin-face { position:absolute; inset:0; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; backface-visibility:hidden; -webkit-backface-visibility:hidden; font-weight:900; font-size:17px; padding:14px; text-align:center; color:#fff; word-break:break-word; line-height:1.4; }
+  .coin-side-label { font-size:10.5px; font-weight:700; padding:3px 11px; border-radius:999px; background:rgba(255,255,255,.22); letter-spacing:.5px; }
+  .coin-front { background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b 55%,#b45309); box-shadow:inset 0 0 0 6px rgba(255,255,255,.26),inset 0 -10px 22px rgba(120,53,15,.45),0 18px 44px rgba(0,0,0,.45); text-shadow:0 1px 3px rgba(120,53,15,.6); }
+  .coin-back { transform:rotateY(180deg); background:radial-gradient(circle at 35% 30%,#a5b4fc,#6366f1 55%,#3730a3); box-shadow:inset 0 0 0 6px rgba(255,255,255,.26),inset 0 -10px 22px rgba(49,46,129,.5),0 18px 44px rgba(0,0,0,.45); text-shadow:0 1px 3px rgba(49,46,129,.6); }
+  .coin-shadow { width:110px; height:14px; border-radius:50%; background:rgba(0,0,0,.45); filter:blur(8px); margin-top:22px; }
+  body.light .coin-shadow { background:rgba(0,0,0,.2); }
+  .coin-shadow.flipping { animation:shadowFlip 2.6s ease; }
+  @keyframes shadowFlip { 0%{width:110px; opacity:1;} 50%{width:52px; opacity:.35;} 100%{width:110px; opacity:1;} }
+  .coin-result { background:var(--green-soft); border:1px solid rgba(16,185,129,.35); color:var(--green-text); border-radius:16px; padding:16px; text-align:center; font-size:17px; font-weight:800; margin-bottom:14px; animation:winnerPop .5s; }
+  .coin-result .side-tag { display:inline-block; font-size:12px; font-weight:700; background:rgba(255,255,255,.1); border:1px solid var(--border); padding:3px 12px; border-radius:999px; margin-bottom:8px; }
+  .countdown-overlay { position:fixed; inset:0; background:rgba(9,9,11,.82); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:10000; color:#fff; font-size:120px; font-weight:900; text-shadow:0 0 60px rgba(139,92,246,.8); animation:countPop 1s; }
+  @keyframes countPop { 0%{transform:scale(.3); opacity:0;} 50%{transform:scale(1.15); opacity:1;} 100%{transform:scale(1); opacity:1;} }
+  #confettiCanvas { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:9999; display:none; }
+  .hidden { display:none !important; }
+  ::-webkit-scrollbar { width:9px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:10px; }
+  @media (max-width:560px) {
+    body { padding:14px 10px; }
+    .container { padding:20px 16px; border-radius:22px; }
+    h1 { font-size:25px; }
+    .brand-icon { width:54px; height:54px; font-size:26px; }
+    .topic { font-size:21px; padding:20px 14px; }
+    .timer-wrap { width:160px; height:160px; }
+    .timer-num { font-size:46px; }
+    .grid-2 { grid-template-columns:1fr; }
+    .grid-3 { grid-template-columns:1fr; }
+    .cat-grid { grid-template-columns:1fr 1fr; }
+    .history-item { flex-direction:column; align-items:stretch; text-align:center; }
+    .float-emoji { display:none; }
+    .countdown-overlay { font-size:84px; }
+    .coin-wrap { width:150px; height:150px; }
+    .coin-face { font-size:14px; }
+  }
+  body.light .choice-btn:hover:not(:disabled),
+  body.light .mode-btn:hover:not(:disabled) { box-shadow:0 10px 24px rgba(0,0,0,.1); }
+</style>
+</head>
+<body>
+<div id="errBanner" class="err-banner"></div>
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+<div class="glow glow3"></div>
+<div class="float-emoji" style="top:14%; right:6%;">🎭</div>
+<div class="float-emoji" style="top:70%; right:10%; animation-delay:1.5s;">✨</div>
+<div class="float-emoji" style="top:24%; left:8%; animation-delay:3s;">🎪</div>
+<div class="float-emoji" style="top:76%; left:6%; animation-delay:0.8s;">⭐</div>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="container">
+  <div class="top-bar">
+    <button id="darkBtn" type="button" title="تغییر تم">☀️ حالت روشن</button>
+    <button id="fullscreenBtn" type="button" title="تمام صفحه">⛶ تمام صفحه</button>
+  </div>
+
+  <div class="brand">
+    <div class="brand-icon">🎭</div>
+    <h1>پانتومیم</h1>
+    <p class="brand-sub">بدون حرف زدن، فقط با حرکت! 🤫</p>
+  </div>
+
+  <!-- صفحه شروع -->
+  <div id="screen-start" class="screen active">
+    <div class="card hero">
+      <p style="font-size:16px; font-weight:700;"><span class="wave">👋</span> خوش آمدید!</p>
+      <p style="color:var(--text-2); font-size:14px; margin-top:6px;">نام دو تیم را وارد کنید تا شروع کنیم:</p>
+    </div>
+    <input type="text" id="team1Name" placeholder="نام تیم اول" value="تیم اول" maxlength="20">
+    <input type="text" id="team2Name" placeholder="نام تیم دوم" value="تیم دوم" maxlength="20">
+    <button id="startNextBtn" type="button">ادامه → انتخاب حالت بازی</button>
+  </div>
+
+  <!-- صفحه انتخاب حالت بازی -->
+  <div id="screen-mode" class="screen">
+    <button class="back-btn" id="backFromMode" type="button">→ برگشت به نام تیم‌ها</button>
+    <h2>حالت بازی را انتخاب کنید</h2>
+    <button class="mode-btn" id="modeNormalBtn" type="button">
+      <span class="mode-icon">🎯</span>
+      <span class="mode-body">
+        <span class="mode-title">حالت معمولی</span>
+        <span class="mode-desc">هر تیم ۱۰ دست — دسته و سطح را خودت انتخاب کن</span>
+      </span>
+      <span class="mode-arrow">←</span>
+    </button>
+    <button class="mode-btn" id="modeSpeedBtn" type="button">
+      <span class="mode-icon">⚡</span>
+      <span class="mode-body">
+        <span class="mode-title">حالت سرعتی</span>
+        <span class="mode-desc">هر تیم یک راند — دسته و سطح هر کلمه تصادفی 🎲 (بدون ضرب‌المثل) — هر حدس درست = ریست تایمر</span>
+      </span>
+      <span class="mode-arrow">←</span>
+    </button>
+  </div>
+
+  <!-- صفحه شیر یا خط -->
+  <div id="screen-coin" class="screen">
+    <button class="back-btn" id="backFromCoin" type="button">→ برگشت به انتخاب حالت</button>
+    <h2>🪙 شیر یا خط</h2>
+    <div class="card hero">
+      <p style="font-weight:700;">برای تعیین تیم شروع‌کننده، سکه را پرتاب کنید</p>
+      <p style="font-size:13px; color:var(--text-2); margin-top:8px;">
+        🟡 روی سکه: <b id="coinTeam1"></b> &nbsp;·&nbsp; 🔵 پشت سکه: <b id="coinTeam2"></b>
+      </p>
+    </div>
+    <div class="coin-scene">
+      <div class="coin-wrap">
+        <div class="coin" id="coin">
+          <div class="coin-face coin-front">
+            <span class="coin-side-label">روی سکه</span>
+            <span id="coinFrontName"></span>
+          </div>
+          <div class="coin-face coin-back">
+            <span class="coin-side-label">پشت سکه</span>
+            <span id="coinBackName"></span>
+          </div>
+        </div>
+      </div>
+      <div class="coin-shadow" id="coinShadow"></div>
+    </div>
+    <div id="coinResult" class="coin-result hidden"></div>
+    <button id="flipBtn" type="button">🪙 پرتاب سکه</button>
+    <button id="startAfterCoinBtn" type="button" class="btn-success hidden">شروع بازی با نوبت برنده سکه →</button>
+  </div>
+
+  <!-- صفحه انتخاب دسته و سطح -->
+  <div id="screen-choose" class="screen">
+    <button class="back-btn" id="backFromChoose" type="button">→ برگشت به انتخاب حالت</button>
+    <div class="progress" id="progressBar"></div>
+    <div class="round-dots" id="roundDots"></div>
+    <h2 id="turnTitle"></h2>
+    <div class="card" style="text-align:right;">
+      <span class="choice-label"><span class="step-num">۱</span> 🎯 ابتدا دسته را انتخاب کنید</span>
+      <div class="cat-grid" id="catGrid">
+        <button class="choice-btn cat-btn" data-cat="میوه‌ها" type="button"><span class="cat-emoji">🍎</span>میوه‌ها<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="سبزیجات" type="button"><span class="cat-emoji">🥕</span>سبزیجات<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="حیوانات" type="button"><span class="cat-emoji">🦁</span>حیوانات<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="اشیاء خانه" type="button"><span class="cat-emoji">🛋️</span>اشیاء خانه<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="وسایل نقلیه" type="button"><span class="cat-emoji">🚗</span>وسایل نقلیه<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="شغل‌ها" type="button"><span class="cat-emoji">💼</span>شغل‌ها<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="اعضای بدن" type="button"><span class="cat-emoji">🖐️</span>اعضای بدن<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="پوشاک" type="button"><span class="cat-emoji">👕</span>پوشاک<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="ورزش‌ها" type="button"><span class="cat-emoji">⚽</span>ورزش‌ها<span class="cb-check">✓</span></button>
+        <button class="choice-btn cat-btn" data-cat="ضرب‌المثل" type="button"><span class="cat-emoji">💬</span>ضرب‌المثل<span class="cb-check">✓</span></button>
+      </div>
+
+      <!-- قدم ۲: سطح — بعد از انتخاب دسته باز می‌شود -->
+      <div class="level-wrap" id="levelWrap">
+        <span class="choice-label"><span class="step-num">۲</span> 📊 حالا سطح را انتخاب کنید</span>
+        <div class="grid-3">
+          <button class="choice-btn" id="lvlEasy" type="button">آسان<br><span class="score-pill" id="ptsEasy">۲</span><span class="cb-check">✓</span></button>
+          <button class="choice-btn" id="lvlMed" type="button">متوسط<br><span class="score-pill" id="ptsMed">۳</span><span class="cb-check">✓</span></button>
+          <button class="choice-btn" id="lvlHard" type="button">سخت<br><span class="score-pill" id="ptsHard">۴</span><span class="cb-check">✓</span></button>
+        </div>
+      </div>
+    </div>
+    <button id="startTurnBtn" type="button" disabled>تأیید و شروع دست ✓</button>
+  </div>
+
+  <!-- صفحه موضوع و تایمر -->
+  <div id="screen-topic" class="screen">
+    <div id="speedBanner" class="speed-banner hidden">⚡ حالت سرعتی — دسته و سطح هر کلمه تصادفی است! 🎲</div>
+    <div class="warning">🔒 فقط بازیکن اجراکننده صفحه را ببیند — بقیه فاصله بگیرند!</div>
+    <div id="speedStats" class="speed-stats hidden">
+      <div>امتیاز نوبت<span class="stat-val" id="speedTurnScore">۰</span></div>
+      <div>کلمات درست<span class="stat-val" id="speedCorrectCount">۰</span></div>
+      <div>رد کردن<span class="stat-val" id="speedSkipsLeft">۱</span></div>
+    </div>
+    <p class="topic-info" id="topicInfo"></p>
+    <div class="topic" id="topicText"></div>
+    <div class="timer-wrap" id="timerWrap">
+      <svg class="timer-ring" viewBox="0 0 200 200">
+        <circle class="ring-bg" cx="100" cy="100" r="86"/>
+        <circle class="ring-fill" id="ringFill" cx="100" cy="100" r="86"/>
+      </svg>
+      <div class="timer-num" id="timerDisplay">۶۰</div>
+    </div>
+    <div class="grid-2" id="normalButtons">
+      <button class="btn-success" id="judgeCorrectBtn" type="button">✅ درست حدس زد</button>
+      <button class="btn-danger" id="judgeWrongBtn" type="button">❌ حدس نادرست</button>
+    </div>
+    <div class="grid-2 hidden" id="speedButtons">
+      <button class="btn-success" id="speedCorrectBtn" type="button">✅ درست</button>
+      <button class="btn-warning" id="speedSkipBtn" type="button">⏭️ رد کلمه</button>
+    </div>
+  </div>
+
+  <!-- صفحه نتیجه دست -->
+  <div id="screen-result" class="screen">
+    <h2>نتیجه این دست</h2>
+    <div id="scoreReport"></div>
+    <div class="next-turn-box">
+      <p id="nextTurnMsg">برای رفتن به نوبت بعدی، دکمه زیر را بزنید</p>
+      <button id="nextTurnBtn" type="button">نوبت بعدی →</button>
+    </div>
+  </div>
+
+  <!-- صفحه پایان بازی -->
+  <div id="screen-end" class="screen">
+    <h2>🏆 جدول نهایی</h2>
+    <div id="finalTable"></div>
+    <div id="winnerBox" class="winner"></div>
+    <h3 style="text-align:center; margin-top:22px;">📜 تاریخچه دست‌ها</h3>
+    <div id="historyLog"></div>
+    <div class="grid-2" style="margin-top:15px;">
+      <button class="btn-secondary" id="newGameBtn" type="button">🔄 بازی جدید</button>
+      <button id="printBtn" type="button">🖨️ چاپ نتیجه</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('error', function(e) {
+  var b = document.getElementById('errBanner');
+  if (b) { b.style.display='block'; b.textContent='⚠ Error: '+(e.message||'unknown')+' @ line '+(e.lineno||'?'); }
+});
+
+// ─── دسته‌های کلمه ───
+const WORD_CATS = ['میوه‌ها','سبزیجات','حیوانات','اشیاء خانه','وسایل نقلیه','شغل‌ها','اعضای بدن','پوشاک','ورزش‌ها'];
+
+const WORDS = {
+  'میوه‌ها': {
+    'آسان': ['سیب','موز','پرتقال','هندوانه','انگور','توت‌فرنگی','گیلاس','آناناس','لیمو','هلو'],
+    'متوسط': ['انار','خربزه','طالبی','کیوی','انبه','نارگیل','گلابی','زردآلو','آلبالو','خرمالو'],
+    'سخت': ['انجیر','به','ازگیل','شلیل','تمشک','بلوبری','پاپایا','گریپ‌فروت','آووکادو','نارنگی']
+  },
+  'سبزیجات': {
+    'آسان': ['هویج','خیار','گوجه','بادمجان','کدو','ذرت','پیاز','سیب‌زمینی','فلفل دلمه‌ای','قارچ'],
+    'متوسط': ['کلم','گل‌کلم','بروکلی','اسفناج','کاهو','تربچه','سیر','نخود فرنگی','لوبیا سبز','چغندر'],
+    'سخت': ['شلغم','کرفس','جعفری','گشنیز','ریحان','نعنا','تره','شوید','بامیه','کنگر']
+  },
+  'حیوانات': {
+    'آسان': ['شیر','گربه','سگ','فیل','میمون','خرگوش','اسب','گاو','مرغ','مار'],
+    'متوسط': ['ببر','پلنگ','گرگ','روباه','خرس','پاندا','زرافه','کرگدن','اسب آبی','شتر'],
+    'سخت': ['یوزپلنگ','گوسفند','بز','الاغ','قاطر','موش','سنجاب','آهو','کانگورو','دلفین']
+  },
+  'اشیاء خانه': {
+    'آسان': ['میز','صندلی','مبل','تخت','تلویزیون','یخچال','چراغ','پرده','فرش','آینه'],
+    'متوسط': ['کمد','بوفه','کتابخانه','فریزر','ماشین لباسشویی','ماشین ظرفشویی','اجاق گاز','مایکروویو','جاروبرقی','اتو'],
+    'سخت': ['پنکه','کولر','شوفاژ','لامپ','آباژور','موکت','قالیچه','تابلو','ساعت دیواری','گلدان']
+  },
+  'وسایل نقلیه': {
+    'آسان': ['ماشین','دوچرخه','موتورسیکلت','اتوبوس','قطار','هواپیما','کشتی','قایق','تاکسی','آمبولانس'],
+    'متوسط': ['مینی‌بوس','ون','کامیون','کامیونت','مترو','تراموا','هلیکوپتر','لنج','زیردریایی','قایق موتوری'],
+    'سخت': ['اسکوتر','اسکیت','رولر اسکیت','تراکتور','بولدوزر','جرثقیل','آتش‌نشانی','ماشین پلیس','سفینه فضایی','تاکسی برقی']
+  },
+  'شغل‌ها': {
+    'آسان': ['معلم','پزشک','پرستار','پلیس','آشپز','نانوا','خیاط','آرایشگر','راننده','کشاورز'],
+    'متوسط': ['مهندس','دندانپزشک','داروساز','وکیل','قاضی','آتش‌نشان','خلبان','مهماندار','مکانیک','برقکار'],
+    'سخت': ['لوله‌کش','نجار','بنا','جوشکار','نقاش','قصاب','دامدار','ماهیگیر','فروشنده','حسابدار']
+  },
+  'اعضای بدن': {
+    'آسان': ['دست','پا','چشم','گوش','دهان','بینی','سر','مو','دندان','زبان'],
+    'متوسط': ['شانه','بازو','آرنج','ساعد','مچ دست','انگشت','ناخن','سینه','شکم','کمر'],
+    'سخت': ['پشت','لگن','ران','زانو','ساق پا','گردن','چانه','لب','ابرو','مژه']
+  },
+  'پوشاک': {
+    'آسان': ['پیراهن','شلوار','کاپشن','کت','پالتو','تی‌شرت','کفش','کلاه','جوراب','دستکش'],
+    'متوسط': ['بارانی','بلوز','شومیز','دامن','مانتو','شال','روسری','چادر','مقنعه','کتانی'],
+    'سخت': ['جوراب‌شلواری','صندل','دمپایی','چکمه','شاپو','شال‌گردن','کمربند','کراوات','پاپیون','عینک']
+  },
+  'ورزش‌ها': {
+    'آسان': ['فوتبال','شنا','والیبال','بسکتبال','تنیس','دو','کشتی','وزنه‌برداری','یوگا','دوچرخه‌سواری'],
+    'متوسط': ['تنیس روی میز','بدمینتون','هندبال','فوتسال','دوومیدانی','پرش طول','پرش ارتفاع','پرتاب نیزه','پرتاب وزنه','ژیمناستیک'],
+    'سخت': ['پیلاتس','کوهنوردی','اسکی','اسکیت','شمشیربازی','بوکس','کاراته','تکواندو','جودو','تیراندازی']
+  },
+  // ✅ ضرب‌المثل‌های جدید — ۴۰ آسان + ۴۰ متوسط + ۴۰ سخت
+  'ضرب‌المثل': {
+    'آسان': [
+      'آب در هاون کوبیدن','کاسه داغ‌تر از آش','دیگ به دیگ می‌گه روت سیاه','موش تو سوراخ نمی‌رفت، جارو به دمش می‌بست','شتر دیدی ندیدی',
+      'از این ستون به آن ستون فرج است','هر که بامش بیش، برفش بیشتر','نان به نرخ روز خوردن','دست و پا چلفتی','سرش به تنش می‌ارزد',
+      'مثل کبک سرش را کرده زیر برف','کبکش خروس می‌خواند','آب از دستش نمی‌چکد','سنگ بزرگ علامت نزدن است','با یک گل بهار نمی‌شود',
+      'دو صد گفته چون نیم کردار نیست','جوجه را آخر پاییز می‌شمارند','مرغ همسایه غاز است','کوه به کوه نمی‌رسد، آدم به آدم می‌رسد','دیوار موش داره، موش هم گوش داره',
+      'خر بیار و باقالی بار کن','آسمان به زمین نمی‌آید','هرچه بگندد نمکش می‌زنند','آب که از سر گذشت، چه یک وجب چه صد وجب','مشک آن است که خود ببوید، نه آنکه عطار بگوید',
+      'گر صبر کنی ز غوره حلوا سازی','از تو حرکت، از خدا برکت','کار نیکو کردن از پر کردن است','عجله کار شیطان است','خواهی نشوی رسوا، همرنگ جماعت شو',
+      'آب از آب تکان نمی‌خورد','دنبال نخود سیاه فرستادن','پشت گوش انداختن','گوش به زنگ بودن','کاسه «چه کنم چه کنم» دست گرفتن',
+      'کلاه خود را قاضی کردن','سر و کله زدن','چشم و هم‌چشمی','دم غنیمت شمردن','یک دست صدا ندارد'
+    ],
+    'متوسط': [
+      'آتش بیار معرکه','آب زیر کاه','سنگ روی یخ شدن','نمک گیر شدن','دست به عصا راه رفتن',
+      'پا در هوا بودن','سر به هوا بودن','دم به تله دادن','توی هچل افتادن','گندم‌نما جو فروش',
+      'کاسه صبرش لبریز شد','دل به دریا زدن','زبان مو درآوردن','خون به جگر شدن','جگر کسی را خون کردن',
+      'آبروریزی کردن','رو راست نبودن','دو دوزه بازی درآوردن','کلاه گشاد سر کسی گذاشتن','پشت کسی را خالی کردن',
+      'تو دهنی زدن','حرف را از دهن کسی کشیدن','از دماغ فیل افتادن','شاخ غول شکستن','کوه کندن',
+      'از هفت‌خوان رستم گذشتن','سیمرغ شدن','کیمیاگری کردن','معجزه کردن','سنگ تمام گذاشتن',
+      'آب به آسیاب کسی ریختن','بادنجان دور قاب‌چین شدن','پا در یک کفش کردن','توی دل کسی راه پیدا کردن','چشم از حدقه درآوردن',
+      'دست تو دست کسی دادن','زهرمار کردن','سنگ انداختن در راه کسی','کلاه شرعی سر کسی گذاشتن','گربه را دم حجله کشتن'
+    ],
+    'سخت': [
+      'آدمی را عقل باید، نه مال و جمال','آدمی به امید زنده است','آدمی را ادب بهتر از مال','آدمی را آدمیت لازم است','آفتاب زیر ابر پنهان نمی‌ماند',
+      'آفتاب لب بام است','آواز دهل از دور خوش است','ادب مرد به ز دولت اوست','باد آورده را باد می‌برد','برو کار می‌کن، مگو چیست کار',
+      'به عمل کار برآید، به سخندانی نیست','تو نیکی می‌کن و در دجله انداز','چو ایران نباشد، تن من مباد','دانش اندر دل چراغ روشن است','درخت را از میوه‌اش بشناس',
+      'دوست آن باشد که گیرد دست دوست','عاقبت جوینده یابنده بود','هرکه طاووس خواهد، جور هندوستان کشد','آنچه را که نمی‌خواهی برای خود، برای دیگران هم نخواه','از ماست که بر ماست',
+      'از این ره که تو می‌روی به ترکستان است','از کوزه همان برون تراود که در اوست','از هول حلیم در دیگ افتادن','از کیسه خلیفه بخشیدن','از خشت خام صدا درآمدن',
+      'از دیوار راست بالا رفتن','از کوره در رفتن','از سیر تا پیاز','از گل نازک‌تر به کسی نگفتن','از ترس مرگ، خود را به آب زدن',
+      'از چاله به چاه افتادن','آسمان ریسمان بافتن','با دست پس زدن، با پا پیش کشیدن','تیر کسی به سنگ خوردن','خشت بر دریا زدن',
+      'رطب خورده منع رطب کی کند','شب دراز است و قلندر بیدار','مار از پونه بدش می‌آید، در لانه پونه سبز می‌کند','مو را از ماست کشیدن','هرچه کنی به خود کنی، گر همه نیک و بد کنی'
+    ]
+  }
+};
+
+// ✅ حالت سرعتی: فقط ۹ دسته کلمه — بدون ضرب‌المثل
+const SPEED_CATS = WORD_CATS.filter(function(c){ return c !== 'ضرب‌المثل'; });
+
+// ─── امتیازها ───
+const POINTS = {};
+WORD_CATS.forEach(function(c){ POINTS[c] = { 'آسان': 2, 'متوسط': 3, 'سخت': 4 }; });
+POINTS['ضرب‌المثل'] = { 'آسان': 5, 'متوسط': 7, 'سخت': 10 };
+
+const TOTAL_SECONDS = 60;
+const NORMAL_TURNS = 10;
+const SPEED_TURNS = 1;
+const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+function fa(n) { return String(n).replace(/\d/g, function(d){ return FA_DIGITS[d]; }); }
+const RING_CIRC = 2 * Math.PI * 86;
+
+let state = {
+  mode: 'normal',
+  teams: [ { name:'', score:0, turns:0 }, { name:'', score:0, turns:0 } ],
+  current: 0,
+  usedTopics: new Set(),
+  currentTopic: '', currentCategory: '', currentLevel: '',
+  timerInterval: null, secondsLeft: TOTAL_SECONDS, turnActive: false,
+  selectedCategory: null, selectedLevel: null,
+  history: [],
+  speedTurnScore: 0, speedTurnCorrect: 0, speedSkipsLeft: 1,
+  flipping: false,
+  coinRotation: 0
+};
+
+function getTotalTurns() { return state.mode === 'speed' ? SPEED_TURNS : NORMAL_TURNS; }
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playTone(freq, duration, type, volume) {
+  if (!audioCtx) return;
+  type = type || 'sine'; volume = (volume === undefined) ? 0.1 : volume;
+  try {
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+function playClick() { playTone(600, .05, 'sine', .05); }
+function playSuccess() { playTone(523.25,.15); setTimeout(function(){playTone(659.25,.15);},100); setTimeout(function(){playTone(783.99,.3);},200); }
+function playFail() { playTone(220,.2,'sawtooth',.08); setTimeout(function(){playTone(150,.35,'sawtooth',.08);},180); }
+function playTick() { playTone(900,.04,'square',.05); }
+function playBeep() { playTone(1300,.08,'square',.08); }
+function playWin() { [523,659,784,1047,1319].forEach(function(f,i){ setTimeout(function(){playTone(f,.25,'sine',.12);}, i*140); }); }
+function playCountdown() { playTone(440,.15,'sine',.15); }
+function playCountdownGo() { playTone(880,.3,'sine',.2); }
+
+function launchConfetti(count) {
+  count = count || 180;
+  const canvas = document.getElementById('confettiCanvas'), ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+  const colors = ['#8b5cf6','#6366f1','#22d3ee','#f59e0b','#10b981','#f43f5e','#d946ef'];
+  const pieces = [];
+  for (let i = 0; i < count; i++) {
+    pieces.push({ x:Math.random()*canvas.width, y:Math.random()*-canvas.height-20, w:7+Math.random()*8, h:7+Math.random()*8, vx:-2+Math.random()*4, vy:2+Math.random()*5, rot:Math.random()*360, vrot:-6+Math.random()*12, color:colors[Math.floor(Math.random()*colors.length)] });
+  }
+  let frames = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(function(p){
+      ctx.save(); ctx.translate(p.x+p.w/2, p.y+p.h/2); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vrot; p.vy+=.06;
+    });
+    frames++;
+    if (frames < 420) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  draw();
+}
+
+function toggleDark() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  document.getElementById('darkBtn').textContent = isLight ? '🌙 حالت تاریک' : '☀️ حالت روشن';
+  try { localStorage.setItem('pantomime-theme', isLight ? 'light' : 'dark'); } catch(e) {}
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }
+  else { if (document.exitFullscreen) document.exitFullscreen(); }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function goToModeSelect() {
+  initAudio(); playClick();
+  state.teams[0].name = document.getElementById('team1Name').value.trim() || 'تیم اول';
+  state.teams[1].name = document.getElementById('team2Name').value.trim() || 'تیم دوم';
+  showScreen('screen-mode');
+}
+
+function selectMode(mode) {
+  playClick();
+  state.mode = mode; state.current = 0;
+  document.getElementById('normalButtons').classList.toggle('hidden', mode !== 'normal');
+  document.getElementById('speedButtons').classList.toggle('hidden', mode !== 'speed');
+  document.getElementById('speedStats').classList.toggle('hidden', mode !== 'speed');
+  document.getElementById('speedBanner').classList.toggle('hidden', mode !== 'speed');
+  showCoinScreen();
+}
+
+// ─── شیر یا خط ───
+function showCoinScreen() {
+  document.getElementById('coinTeam1').textContent = state.teams[0].name;
+  document.getElementById('coinTeam2').textContent = state.teams[1].name;
+  document.getElementById('coinFrontName').textContent = state.teams[0].name;
+  document.getElementById('coinBackName').textContent = state.teams[1].name;
+  state.coinRotation = 0;
+  const coin = document.getElementById('coin');
+  coin.style.transition = 'none';
+  coin.style.transform = 'rotateY(0deg)';
+  void coin.offsetWidth;
+  coin.style.transition = '';
+  document.getElementById('coinResult').classList.add('hidden');
+  document.getElementById('flipBtn').classList.remove('hidden');
+  document.getElementById('flipBtn').disabled = false;
+  document.getElementById('startAfterCoinBtn').classList.add('hidden');
+  showScreen('screen-coin');
+}
+
+function flipCoin() {
+  if (state.flipping) return;
+  state.flipping = true;
+  initAudio();
+  playClick();
+
+  const result = Math.random() < 0.5 ? 0 : 1;
+  state.current = result;
+
+  document.getElementById('coinResult').classList.add('hidden');
+  document.getElementById('startAfterCoinBtn').classList.add('hidden');
+  document.getElementById('flipBtn').disabled = true;
+
+  const coin = document.getElementById('coin');
+  const shadow = document.getElementById('coinShadow');
+
+  const currentMod = ((state.coinRotation % 360) + 360) % 360;
+  const targetMod = (result === 1) ? 180 : 0;
+  let extra = targetMod - currentMod;
+  if (extra <= 0) extra += 360;
+  const spins = 4 + Math.floor(Math.random() * 3);
+  const target = state.coinRotation + extra + spins * 360;
+  state.coinRotation = target;
+
+  coin.style.transform = 'rotateY(' + target + 'deg)';
+
+  shadow.classList.remove('flipping');
+  void shadow.offsetWidth;
+  shadow.classList.add('flipping');
+
+  let ticks = 0;
+  const flipSound = setInterval(function() {
+    playTone(700 + Math.random()*500, .03, 'square', .03);
+    ticks++; if (ticks > 14) clearInterval(flipSound);
+  }, 170);
+
+  setTimeout(function() {
+    clearInterval(flipSound);
+    shadow.classList.remove('flipping');
+    playBeep();
+    setTimeout(function(){ playSuccess(); }, 150);
+
+    const winner = state.teams[result];
+    const sideTag = result === 0 ? '🟡 روی سکه' : '🔵 پشت سکه';
+    const resultEl = document.getElementById('coinResult');
+    resultEl.innerHTML =
+      '<span class="side-tag">' + sideTag + '</span><br>' +
+      '🎊 سکه به نفع <b>' + winner.name + '</b> افتاد!<br>' +
+      '<span style="font-size:14px; font-weight:600;">' + winner.name + ' بازی را شروع می‌کند! 🎤</span>';
+    resultEl.classList.remove('hidden');
+
+    document.getElementById('flipBtn').classList.add('hidden');
+    document.getElementById('startAfterCoinBtn').classList.remove('hidden');
+    state.flipping = false;
+    launchConfetti(60);
+  }, 2750);
+}
+
+function beginGameAfterCoin() { playClick(); startTurn(); }
+
+function startTurn() {
+  if (state.mode === 'speed') { startSpeedTurn(); return; }
+  state.selectedCategory = null; state.selectedLevel = null;
+  document.querySelectorAll('.choice-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.getElementById('levelWrap').classList.remove('open');
+  document.getElementById('startTurnBtn').disabled = true;
+  updatePointsDisplay(); updateTurnScreen();
+  showScreen('screen-choose');
+}
+
+function startSpeedTurn() {
+  state.speedTurnScore = 0; state.speedTurnCorrect = 0; state.speedSkipsLeft = 1;
+  showScreen('screen-topic');
+  showCountdown(function(){ prepareNextTopic(); startTimer(); });
+}
+
+function showCountdown(callback) {
+  const overlay = document.createElement('div');
+  overlay.className = 'countdown-overlay';
+  document.body.appendChild(overlay);
+  let count = 3;
+  function showNum() {
+    if (count > 0) {
+      overlay.textContent = fa(count);
+      overlay.style.animation = 'none'; void overlay.offsetWidth;
+      overlay.style.animation = 'countPop 0.9s';
+      playCountdown(); count--;
+      setTimeout(showNum, 900);
+    } else {
+      overlay.textContent = '🏁'; playCountdownGo();
+      setTimeout(function(){ overlay.remove(); callback(); }, 600);
+    }
+  }
+  showNum();
+}
+
+function updatePointsDisplay() {
+  const cat = state.selectedCategory || WORD_CATS[0];
+  document.getElementById('ptsEasy').textContent = fa(POINTS[cat]['آسان']);
+  document.getElementById('ptsMed').textContent = fa(POINTS[cat]['متوسط']);
+  document.getElementById('ptsHard').textContent = fa(POINTS[cat]['سخت']);
+}
+
+function updateTurnScreen() {
+  const t = state.teams[state.current], totalTurns = getTotalTurns();
+  const titleEl = document.getElementById('turnTitle');
+  if (titleEl) titleEl.textContent = '🎤 نوبت ' + t.name;
+  const progressEl = document.getElementById('progressBar');
+  if (progressEl) {
+    progressEl.innerHTML =
+      '<span class="team-label"><span class="team-dot t1"></span>' + state.teams[0].name + ': ' + fa(state.teams[0].turns) + ' از ' + fa(totalTurns) + '</span>' +
+      '<span class="team-label"><span class="team-dot t2"></span>' + state.teams[1].name + ': ' + fa(state.teams[1].turns) + ' از ' + fa(totalTurns) + '</span>';
+  }
+  const dots = document.getElementById('roundDots');
+  if (dots) {
+    dots.innerHTML = '';
+    for (let i = 0; i < totalTurns; i++) {
+      const d1 = document.createElement('div');
+      d1.className = 'round-dot' + (i < state.teams[0].turns ? ' t1' : '') + (state.current === 0 && i === state.teams[0].turns ? ' current' : '');
+      dots.appendChild(d1);
+      const d2 = document.createElement('div');
+      d2.className = 'round-dot' + (i < state.teams[1].turns ? ' t2' : '') + (state.current === 1 && i === state.teams[1].turns ? ' current' : '');
+      dots.appendChild(d2);
+    }
+  }
+}
+
+function selectCategory(cat) {
+  playClick();
+  const categoryChanged = state.selectedCategory !== cat;
+  state.selectedCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.querySelectorAll('.cat-btn').forEach(function(b){
+    if (b.getAttribute('data-cat') === cat) b.classList.add('selected');
+  });
+  updatePointsDisplay();
+
+  const levelWrap = document.getElementById('levelWrap');
+  if (categoryChanged || !levelWrap.classList.contains('open')) {
+    state.selectedLevel = null;
+    document.querySelectorAll('#lvlEasy, #lvlMed, #lvlHard').forEach(function(b){ b.classList.remove('selected'); });
+    levelWrap.classList.remove('open');
+    void levelWrap.offsetWidth;
+    levelWrap.classList.add('open');
+  }
+  checkReady();
+}
+
+function selectLevel(level) {
+  playClick();
+  state.selectedLevel = level;
+  document.querySelectorAll('#lvlEasy, #lvlMed, #lvlHard').forEach(function(b){ b.classList.remove('selected'); });
+  const map = { 'آسان':'lvlEasy', 'متوسط':'lvlMed', 'سخت':'lvlHard' };
+  document.getElementById(map[level]).classList.add('selected');
+  checkReady();
+}
+
+function checkReady() {
+  document.getElementById('startTurnBtn').disabled = !(state.selectedCategory && state.selectedLevel);
+}
+
+function confirmChoice() {
+  if (!state.selectedCategory || !state.selectedLevel) return;
+  playClick();
+  state.currentCategory = state.selectedCategory;
+  state.currentLevel = state.selectedLevel;
+  prepareNextTopic();
+  showScreen('screen-topic');
+  startTimer();
+}
+
+// ─── حالت سرعتی: دسته و سطح تصادفی ───
+function pickSpeedTopic() {
+  const levels = ['آسان','متوسط','سخت'];
+  const combos = [];
+  SPEED_CATS.forEach(function(c) {
+    levels.forEach(function(l) {
+      const hasFresh = WORDS[c][l].some(function(w){ return !state.usedTopics.has(w); });
+      if (hasFresh) combos.push({ cat: c, lvl: l });
+    });
+  });
+  if (combos.length === 0) {
+    state.usedTopics.clear();
+    SPEED_CATS.forEach(function(c) {
+      levels.forEach(function(l) { combos.push({ cat: c, lvl: l }); });
+    });
+  }
+  const pick = combos[Math.floor(Math.random() * combos.length)];
+  state.currentCategory = pick.cat;
+  state.currentLevel = pick.lvl;
+  const fresh = WORDS[pick.cat][pick.lvl].filter(function(w){ return !state.usedTopics.has(w); });
+  return fresh[Math.floor(Math.random() * fresh.length)];
+}
+
+function getRandomTopic(category, level) {
+  const all = WORDS[category][level];
+  const fresh = all.filter(function(w){ return !state.usedTopics.has(w); });
+  if (fresh.length > 0) return fresh[Math.floor(Math.random() * fresh.length)];
+  all.forEach(function(w){ state.usedTopics.delete(w); });
+  return all[Math.floor(Math.random() * all.length)];
+}
+
+function prepareNextTopic() {
+  if (state.mode === 'speed') {
+    state.currentTopic = pickSpeedTopic();
+  } else {
+    state.currentTopic = getRandomTopic(state.currentCategory, state.currentLevel);
+  }
+  state.usedTopics.add(state.currentTopic);
+  document.getElementById('topicInfo').innerHTML = 'دسته: <b>' + state.currentCategory + '</b> — سطح: <b>' + state.currentLevel + '</b>';
+  const topicEl = document.getElementById('topicText');
+  topicEl.classList.remove('shuffling');
+  topicEl.textContent = '«' + state.currentTopic + '»';
+  topicEl.style.animation = 'topicReveal 0.5s ease';
+  setTimeout(function(){ topicEl.style.animation = ''; }, 550);
+  if (state.mode === 'speed') {
+    document.getElementById('speedTurnScore').textContent = fa(state.speedTurnScore);
+    document.getElementById('speedCorrectCount').textContent = fa(state.speedTurnCorrect);
+    document.getElementById('speedSkipsLeft').textContent = fa(state.speedSkipsLeft);
+    const skipBtn = document.getElementById('speedSkipBtn');
+    skipBtn.disabled = state.speedSkipsLeft <= 0;
+    skipBtn.textContent = state.speedSkipsLeft > 0 ? '⏭️ رد کلمه' : '⏭️ رد شده';
+  }
+}
+
+function startTimer() {
+  state.secondsLeft = TOTAL_SECONDS;
+  state.turnActive = true;
+  updateTimerUI();
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(function() {
+    state.secondsLeft--;
+    updateTimerUI();
+    if (state.secondsLeft <= 10 && state.secondsLeft > 0) playTick();
+    if (state.secondsLeft === 0) playBeep();
+    if (state.secondsLeft <= 0) {
+      clearInterval(state.timerInterval); state.timerInterval = null;
+      if (state.turnActive) { if (state.mode === 'speed') speedEnd(); else judge(false); }
+    }
+  }, 1000);
+}
+
+function resetTimerForSpeed() {
+  state.secondsLeft = TOTAL_SECONDS;
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  document.getElementById('timerDisplay').textContent = fa(state.secondsLeft);
+  document.getElementById('ringFill').style.strokeDashoffset = (RING_CIRC * (1 - state.secondsLeft / TOTAL_SECONDS)).toFixed(1);
+  const wrap = document.getElementById('timerWrap');
+  wrap.classList.toggle('warning', state.secondsLeft <= 20 && state.secondsLeft > 10);
+  wrap.classList.toggle('danger', state.secondsLeft <= 10);
+}
+
+// ─── منطق حالت سرعتی ───
+function speedCorrect() {
+  if (!state.turnActive) return;
+  const pts = POINTS[state.currentCategory][state.currentLevel];
+  state.speedTurnScore += pts;
+  state.speedTurnCorrect++;
+  document.getElementById('speedTurnScore').textContent = fa(state.speedTurnScore);
+  document.getElementById('speedCorrectCount').textContent = fa(state.speedTurnCorrect);
+  playSuccess();
+  launchConfetti(40);
+  resetTimerForSpeed();
+  prepareNextTopic();
+}
+
+function speedSkip() {
+  if (!state.turnActive || state.speedSkipsLeft <= 0) return;
+  playFail();
+  state.speedSkipsLeft--;
+  document.getElementById('speedSkipsLeft').textContent = fa(state.speedSkipsLeft);
+  const skipBtn = document.getElementById('speedSkipBtn');
+  skipBtn.disabled = true;
+  skipBtn.textContent = '⏭️ رد شده';
+  prepareNextTopic();
+}
+
+function speedEnd() {
+  if (!state.turnActive) return;
+  state.turnActive = false;
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  playFail();
+  const t = state.teams[state.current];
+  t.score += state.speedTurnScore;
+  t.turns++;
+  state.history.push({ team: t.name, topic: '⚡ دست سرعتی', cat: 'تصادفی 🎲', lvl: 'تصادفی 🎲', points: state.speedTurnScore });
+  showResult(true);
+}
+
+// ─── منطق حالت معمولی ───
+function judge(correct) {
+  if (!state.turnActive) return;
+  state.turnActive = false;
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  const t = state.teams[state.current];
+  let pts = 0;
+  if (correct) {
+    pts = POINTS[state.currentCategory][state.currentLevel];
+    t.score += pts;
+    playSuccess();
+    launchConfetti(100);
+  } else {
+    playFail();
+  }
+  t.turns++;
+  state.history.push({ team: t.name, topic: state.currentTopic, cat: state.currentCategory, lvl: state.currentLevel, points: pts });
+  showResult(false);
+}
+
+function showResult(isSpeed) {
+  const t = state.teams[state.current];
+  const report = document.getElementById('scoreReport');
+  let html = '<div class="report-row"><span class="r-label">🎤 تیم اجراکننده</span><span class="r-val">' + t.name + '</span></div>';
+  if (isSpeed) {
+    html +=
+      '<div class="report-row"><span class="r-label">✅ کلمات درست</span><span class="r-val">' + fa(state.speedTurnCorrect) + '</span></div>' +
+      '<div class="report-row"><span class="r-label">⏭️ کلمات رد شده</span><span class="r-val">' + fa(1 - state.speedSkipsLeft) + '</span></div>';
+  } else {
+    const h = state.history[state.history.length - 1];
+    html +=
+      '<div class="report-row"><span class="r-label">🎯 دسته / سطح</span><span class="r-val">' + h.cat + ' / ' + h.lvl + '</span></div>' +
+      '<div class="report-row"><span class="r-label">💡 کلمه</span><span class="r-val">' + h.topic + '</span></div>' +
+      '<div class="report-row"><span class="r-label">🏁 نتیجه</span><span class="r-val">' + (h.points > 0 ? '✅ درست حدس زد' : '❌ حدس نادرست') + '</span></div>';
+  }
+  html +=
+    '<div class="report-row"><span class="r-label">📊 امتیاز کل — ' + state.teams[0].name + '</span><span class="r-val">' + fa(state.teams[0].score) + '</span></div>' +
+    '<div class="report-row"><span class="r-label">📊 امتیاز کل — ' + state.teams[1].name + '</span><span class="r-val">' + fa(state.teams[1].score) + '</span></div>' +
+    '<div class="report-row total"><span class="r-label">امتیاز این دست</span><span class="r-val score-big">+' + fa(isSpeed ? state.speedTurnScore : state.history[state.history.length - 1].points) + '</span></div>';
+  report.innerHTML = html;
+
+  const over = isGameOver();
+  document.getElementById('nextTurnMsg').textContent = over
+    ? 'بازی تمام شد! 🎉 برای دیدن نتیجه نهایی دکمه زیر را بزنید'
+    : 'نوبت بعدی با تیم «' + state.teams[1 - state.current].name + '» است';
+  document.getElementById('nextTurnBtn').textContent = over ? '🏆 دیدن نتیجه نهایی' : 'نوبت بعدی →';
+  showScreen('screen-result');
+}
+
+function isGameOver() {
+  const total = getTotalTurns();
+  return state.teams[0].turns >= total && state.teams[1].turns >= total;
+}
+
+function nextTurn() {
+  playClick();
+  if (isGameOver()) { endGame(); return; }
+  state.current = 1 - state.current;
+  startTurn();
+}
+
+function endGame() {
+  playWin();
+  launchConfetti(220);
+  const sorted = state.teams.slice().sort(function(a,b){ return b.score - a.score; });
+  document.getElementById('finalTable').innerHTML =
+    '<table><thead><tr><th>تیم</th><th>دست‌ها</th><th>امتیاز</th></tr></thead><tbody>' +
+    sorted.map(function(t){ return '<tr><td>' + t.name + '</td><td>' + fa(t.turns) + '</td><td class="score-big">' + fa(t.score) + '</td></tr>'; }).join('') +
+    '</tbody></table>';
+  const w = document.getElementById('winnerBox');
+  if (state.teams[0].score === state.teams[1].score) {
+    w.innerHTML = '<span class="trophy">🤝</span><br>مساوی شد! هر دو تیم برنده‌اند';
+  } else {
+    const winner = state.teams[0].score > state.teams[1].score ? state.teams[0] : state.teams[1];
+    w.innerHTML = '<span class="trophy">🏆</span><br>برنده: ' + winner.name + '<br>با ' + fa(winner.score) + ' امتیاز!';
+  }
+  renderHistory();
+  showScreen('screen-end');
+}
+
+function renderHistory() {
+  const log = document.getElementById('historyLog');
+  if (state.history.length === 0) {
+    log.innerHTML = '<p style="text-align:center; color:var(--text-3); font-size:13px;">دستی ثبت نشده است</p>';
+    return;
+  }
+  log.innerHTML = '';
+  state.history.forEach(function(h) {
+    const div = document.createElement('div');
+    div.className = 'history-item ' + (h.points > 0 ? 'correct' : 'wrong');
+    div.innerHTML =
+      '<div><div class="history-topic">' + h.topic + '</div>' +
+      '<div class="history-info">' + h.team + ' — ' + h.cat + ' / ' + h.lvl + '</div></div>' +
+      '<span class="history-score">+' + fa(h.points) + '</span>';
+    log.appendChild(div);
+  });
+}
+
+function newGame() {
+  playClick();
+  state.mode = 'normal';
+  state.teams = [ { name:'', score:0, turns:0 }, { name:'', score:0, turns:0 } ];
+  state.current = 0;
+  state.usedTopics = new Set();
+  state.currentTopic = ''; state.currentCategory = ''; state.currentLevel = '';
+  state.history = [];
+  state.speedTurnScore = 0; state.speedTurnCorrect = 0; state.speedSkipsLeft = 1;
+  state.turnActive = false;
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  document.getElementById('team1Name').value = 'تیم اول';
+  document.getElementById('team2Name').value = 'تیم دوم';
+  showScreen('screen-start');
+}
+
+// ─── بازیابی تم ذخیره‌شده ───
+try {
+  const saved = localStorage.getItem('pantomime-theme');
+  if (saved === 'light') document.body.classList.add('light');
+  document.getElementById('darkBtn').textContent = (saved === 'light') ? '🌙 حالت تاریک' : '☀️ حالت روشن';
+} catch(e) {}
+
+// ─── اتصال رویدادها ───
+document.getElementById('darkBtn').addEventListener('click', toggleDark);
+document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+document.getElementById('startNextBtn').addEventListener('click', goToModeSelect);
+document.getElementById('backFromMode').addEventListener('click', function(){ playClick(); showScreen('screen-start'); });
+document.getElementById('modeNormalBtn').addEventListener('click', function(){ selectMode('normal'); });
+document.getElementById('modeSpeedBtn').addEventListener('click', function(){ selectMode('speed'); });
+document.getElementById('backFromCoin').addEventListener('click', function(){ playClick(); showScreen('screen-mode'); });
+document.getElementById('flipBtn').addEventListener('click', flipCoin);
+document.getElementById('startAfterCoinBtn').addEventListener('click', beginGameAfterCoin);
+document.getElementById('backFromChoose').addEventListener('click', function(){ playClick(); showScreen('screen-mode'); });
+document.querySelectorAll('.cat-btn').forEach(function(b){
+  b.addEventListener('click', function(){ selectCategory(b.getAttribute('data-cat')); });
+});
+document.getElementById('lvlEasy').addEventListener('click', function(){ selectLevel('آسان'); });
+document.getElementById('lvlMed').addEventListener('click', function(){ selectLevel('متوسط'); });
+document.getElementById('lvlHard').addEventListener('click', function(){ selectLevel('سخت'); });
+document.getElementById('startTurnBtn').addEventListener('click', confirmChoice);
+document.getElementById('judgeCorrectBtn').addEventListener('click', function(){ judge(true); });
+document.getElementById('judgeWrongBtn').addEventListener('click', function(){ judge(false); });
+document.getElementById('speedCorrectBtn').addEventListener('click', speedCorrect);
+document.getElementById('speedSkipBtn').addEventListener('click', speedSkip);
+document.getElementById('nextTurnBtn').addEventListener('click', nextTurn);
+document.getElementById('newGameBtn').addEventListener('click', newGame);
+document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+</script>
+</body>
+</html>
